@@ -987,11 +987,7 @@ def create_app(args):
                     os.getenv("RERANK_MAX_TOKENS_PER_DOC", "4096")
                 )
 
-            # Add extra_body if provided
-            if extra_body:
-                kwargs["extra_body"] = extra_body
-
-            return await selected_rerank_func(**kwargs)
+            return await selected_rerank_func(**kwargs, extra_body=extra_body)
 
         rerank_model_func = server_rerank_func
         logger.info(
