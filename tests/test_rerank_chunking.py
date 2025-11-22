@@ -40,7 +40,9 @@ class TestChunkDocumentsForRerank:
         long_doc = "a" * 2000  # 2000 characters
         documents = [long_doc, "short doc"]
 
-        with patch("lightrag.rerank.TiktokenTokenizer", side_effect=ImportError):
+        with patch(
+            "lightrag.utils.TiktokenTokenizer", side_effect=ImportError("Mock error")
+        ):
             chunked_docs, doc_indices = chunk_documents_for_rerank(
                 documents,
                 max_tokens=100,  # 100 tokens = ~400 chars
@@ -253,7 +255,7 @@ class TestCohereRerankChunking:
                 {"index": 1, "relevance_score": 0.7},
             ]
 
-            result = await cohere_rerank(
+            await cohere_rerank(
                 query=query,
                 documents=documents,
                 api_key="test-key",
@@ -281,7 +283,7 @@ class TestCohereRerankChunking:
                 {"index": 1, "relevance_score": 0.7},
             ]
 
-            result = await cohere_rerank(
+            await cohere_rerank(
                 query=query,
                 documents=documents,
                 api_key="test-key",
@@ -305,9 +307,7 @@ class TestCohereRerankChunking:
         ) as mock_api:
             mock_api.return_value = [{"index": 0, "relevance_score": 0.9}]
 
-            result = await cohere_rerank(
-                query=query, documents=documents, api_key="test-key"
-            )
+            await cohere_rerank(query=query, documents=documents, api_key="test-key")
 
             # Verify default values
             call_kwargs = mock_api.call_args[1]
